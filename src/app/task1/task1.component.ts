@@ -38,15 +38,19 @@ export class Task1Component implements OnInit {
     const colorSet = new Set<string>();
 
     styleElements.forEach(el => {
-      const styles = el.getAttribute('style')!.split(';');
+      const styles = el.getAttribute('style')?.split(';') || [];
       styles.forEach(style => {
-        if (style.includes('fill:')) {
-          const color = style.split('fill:')[1].trim();
-          colorSet.add(color);
+        const styleParts = style.split(':');
+        if (styleParts.length === 2 && styleParts[0].trim() === 'fill') {
+          const color = styleParts[1].trim();
+          if (color.startsWith('rgb(')) {
+            colorSet.add(color);
+          }
         }
       });
     });
 
+    console.log('Extracted colors:', Array.from(colorSet)); 
     this.colors = Array.from(colorSet);
   }
 
@@ -58,36 +62,34 @@ export class Task1Component implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.selectedColor = result;
-        this.updateSvgColor(color);
+        this.updateSvgColor(color, result);
       }
     });
   }
 
-  updateSvgColor(originalColor: string) {
-    if (this.svgDoc && this.selectedColor) {
+  updateSvgColor(originalColor: string, newColor: string) {
+    if (this.svgDoc && newColor) {
       const elementsToUpdate = this.svgDoc.querySelectorAll(`[style*="fill:${originalColor}"]`);
       elementsToUpdate.forEach(element => {
         const styles = element.getAttribute('style')!.split(';').map(style => {
           if (style.includes(`fill:${originalColor}`)) {
-            return `fill:${this.selectedColor}`;
+            return `fill:${newColor}`;
           }
           return style;
         });
         element.setAttribute('style', styles.join(';'));
       });
 
-      
       const serializer = new XMLSerializer();
       this.svgContent = serializer.serializeToString(this.svgDoc);
     }
   }
 
   downloadSvg() {
-    
+    // Implement the logic for downloading the SVG
   }
 
   shareSvg() {
-   
+    // Implement the logic for sharing the SVG
   }
 }
-
