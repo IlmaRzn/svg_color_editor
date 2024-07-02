@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { MatDialog } from '@angular/material/dialog';
 import { ColorPickerDialogComponent } from '../color-picker-dialog/color-picker-dialog.component';
 
 @Component({
@@ -9,15 +8,17 @@ import { ColorPickerDialogComponent } from '../color-picker-dialog/color-picker-
   styleUrls: ['./task1.component.css']
 })
 export class Task1Component implements OnInit {
+  @ViewChild('overlayContainer', { read: ViewContainerRef }) overlayContainer!: ViewContainerRef;
+
   selectedColor: string = '';
   colors: string[] = [];
-  svgContent: string = ''; 
-  svgUrl: string = '/assets/images/study.svg'; 
-  svgDoc: Document | null = null; 
+  svgContent: string = '';
+  svgUrl: string = '/assets/images/study.svg';
+  svgDoc: Document | null = null;
 
   constructor(
     private http: HttpClient,
-    private dialog: MatDialog
+    private componentFactoryResolver: ComponentFactoryResolver
   ) {}
 
   ngOnInit(): void {
@@ -30,6 +31,7 @@ export class Task1Component implements OnInit {
       this.svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
       this.svgContent = svgContent;
       this.extractColors(this.svgDoc);
+      console.log('Extracted colors:', this.colors); 
     });
   }
 
@@ -39,6 +41,7 @@ export class Task1Component implements OnInit {
 
     styleElements.forEach(el => {
       const styles = el.getAttribute('style')?.split(';') || [];
+
       styles.forEach(style => {
         const styleParts = style.split(':');
         if (styleParts.length === 2 && styleParts[0].trim() === 'fill') {
@@ -50,21 +53,28 @@ export class Task1Component implements OnInit {
       });
     });
 
-    console.log('Extracted colors:', Array.from(colorSet)); 
     this.colors = Array.from(colorSet);
+    console.log('Extract colors:', this.colors);
   }
 
   openColorPicker(color: string) {
-    const dialogRef = this.dialog.open(ColorPickerDialogComponent, {
-      data: { selectedColor: color }
-    });
+    // Clear previous overlays
+    if (this.overlayContainer) {
+      this.overlayContainer.clear();
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.selectedColor = result;
-        this.updateSvgColor(color, result);
-      }
-    });
+      // Create component dynamically
+      const componentFactory = this.componentFactoryResolver.resolveComponentFactory(ColorPickerDialogComponent);
+      const componentRef = this.overlayContainer.createComponent(componentFactory);
+
+      // Pass data to the component instance
+      componentRef.instance.selectedColor = color;
+
+      componentRef.instance.colorSelected.subscribe((newColor: string) => {
+        this.updateSvgColor(color, newColor);
+      });
+    } else {
+      console.error('Overlay container not found');
+    }
   }
 
   updateSvgColor(originalColor: string, newColor: string) {
@@ -79,17 +89,16 @@ export class Task1Component implements OnInit {
         });
         element.setAttribute('style', styles.join(';'));
       });
-
       const serializer = new XMLSerializer();
       this.svgContent = serializer.serializeToString(this.svgDoc);
     }
   }
 
   downloadSvg() {
-    // Implement the logic for downloading the SVG
+    // Implement download logic here
   }
 
   shareSvg() {
-    // Implement the logic for sharing the SVG
+    // Implement share logic here
   }
 }

@@ -1,5 +1,4 @@
-import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-color-picker-dialog',
@@ -7,20 +6,10 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   styleUrls: ['./color-picker-dialog.component.css']
 })
 export class ColorPickerDialogComponent {
-  selectedColor: string;
+  @Input() selectedColor: string = '';
+  @Output() colorSelected = new EventEmitter<string>();
 
-  constructor(
-    public dialogRef: MatDialogRef<ColorPickerDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { selectedColor: string }
-  ) {
-    this.selectedColor = data.selectedColor;
-  }
-
-  setColor(color: string) {
-    this.selectedColor = color;
-  }
-
-  closeDialog() {
-    this.dialogRef.close(this.selectedColor);
+  selectColor(color: string) {
+    this.colorSelected.emit(color);
   }
 }
