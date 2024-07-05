@@ -9,7 +9,6 @@ import { ColorPickerDialogComponent } from '../color-picker-dialog/color-picker-
 })
 export class Task1Component implements OnInit {
   @ViewChild('overlayContainer', { read: ViewContainerRef }) overlayContainer!: ViewContainerRef;
-
   selectedColor: string = '';
   colors: string[] = [];
   svgContent: string = '';
@@ -31,7 +30,7 @@ export class Task1Component implements OnInit {
       this.svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
       this.svgContent = svgContent;
       this.extractColors(this.svgDoc);
-      console.log('Extracted colors:', this.colors); 
+      console.log('Extracted colors:', this.colors);
     });
   }
 
@@ -41,7 +40,6 @@ export class Task1Component implements OnInit {
 
     styleElements.forEach(el => {
       const styles = el.getAttribute('style')?.split(';') || [];
-
       styles.forEach(style => {
         const styleParts = style.split(':');
         if (styleParts.length === 2 && styleParts[0].trim() === 'fill') {
@@ -54,21 +52,23 @@ export class Task1Component implements OnInit {
     });
 
     this.colors = Array.from(colorSet);
-    console.log('Extract colors:', this.colors);
+    if (this.colors.length > 0) {
+      this.openColorPicker(this.colors[0]);
+    } else {
+      console.log('No colors found');
+    }
+    console.log('Extracted colors:', this.colors);
   }
 
   openColorPicker(color: string) {
-    // Clear previous overlays
+    console.log('Opening color picker for color:', color);
     if (this.overlayContainer) {
       this.overlayContainer.clear();
 
-      // Create component dynamically
       const componentFactory = this.componentFactoryResolver.resolveComponentFactory(ColorPickerDialogComponent);
       const componentRef = this.overlayContainer.createComponent(componentFactory);
 
-      // Pass data to the component instance
       componentRef.instance.selectedColor = color;
-
       componentRef.instance.colorSelected.subscribe((newColor: string) => {
         this.updateSvgColor(color, newColor);
       });

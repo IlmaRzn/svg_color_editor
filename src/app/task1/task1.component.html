@@ -13,11 +13,10 @@
                 <div class="d-flex flex-wrap mt-3">
                     <div class="me-2">Colors</div>
                     <div class="d-flex flex-wrap">
-                        <mat-button-toggle *ngFor="let color of colors" [value]="color" (click)="openColorPicker(color)"
-                            class="m-1">
+                        <button *ngFor="let color of colors" (click)="openColorPicker(color)" class="m-1">
                             <div [style.background-color]="color" class="color-box" style="width: 20px; height: 20px;">
                             </div>
-                        </mat-button-toggle>
+                        </button>
                     </div>
                 </div>
                 <div *ngIf="colors.length === 0" class="mt-3">No colors found.</div>
@@ -29,5 +28,4 @@
         </div>
     </div>
 </div>
-<!-- Add an overlay container -->
 <ng-template #overlayContainer></ng-template>
