@@ -10,11 +10,11 @@ import { ColorPickerDialogComponent } from '../color-picker-dialog/color-picker-
 export class Task1Component implements OnInit {
   @ViewChild('overlayContainer', { read: ViewContainerRef }) overlayContainer!: ViewContainerRef;
 
-  selectedColor: string = '';
   colors: string[] = [];
   svgContent: string = '';
   svgUrl: string = '/assets/images/study.svg';
   svgDoc: Document | null = null;
+  selectedColor: string = '#000000';
 
   constructor(
     private http: HttpClient,
@@ -31,7 +31,7 @@ export class Task1Component implements OnInit {
       this.svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
       this.svgContent = svgContent;
       this.extractColors(this.svgDoc);
-      console.log('Extracted colors:', this.colors); 
+      console.log('Extracted colors:', this.colors);
     });
   }
 
@@ -57,20 +57,18 @@ export class Task1Component implements OnInit {
     console.log('Extract colors:', this.colors);
   }
 
-  openColorPicker(color: string) {
-    // Clear previous overlays
+  openColorPicker(originalColor: string) {
     if (this.overlayContainer) {
       this.overlayContainer.clear();
 
-      // Create component dynamically
       const componentFactory = this.componentFactoryResolver.resolveComponentFactory(ColorPickerDialogComponent);
       const componentRef = this.overlayContainer.createComponent(componentFactory);
 
-      // Pass data to the component instance
-      componentRef.instance.selectedColor = color;
+    
+      componentRef.instance.color = originalColor;
 
-      componentRef.instance.colorSelected.subscribe((newColor: string) => {
-        this.updateSvgColor(color, newColor);
+      componentRef.instance.colorSelected.subscribe((selectedColor: string) => {
+        this.updateSvgColor(originalColor, selectedColor);
       });
     } else {
       console.error('Overlay container not found');

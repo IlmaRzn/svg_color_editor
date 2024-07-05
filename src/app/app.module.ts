@@ -15,9 +15,11 @@ import { ColorPickerDialogComponent } from './color-picker-dialog/color-picker-d
 import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { SafeHtmlPipe } from './safe-html.pipe';
-import {  NgxMatColorPickerModule } from '@angular-material-components/color-picker';
+
 import { OverlayModule } from '@angular/cdk/overlay';
 import { PortalModule } from '@angular/cdk/portal';
+import { ColorPickerModule } from 'ngx-color-picker';
+import { NgxMatColorPickerModule } from '@angular-material-components/color-picker';
 
 
 @NgModule({
@@ -39,9 +41,11 @@ import { PortalModule } from '@angular/cdk/portal';
     MatToolbarModule,
     MatDialogModule,
     FormsModule,
-    NgxMatColorPickerModule,
+   
     OverlayModule,
     PortalModule,
+     ColorPickerModule,
+     NgxMatColorPickerModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

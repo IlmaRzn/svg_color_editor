@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'app-color-picker-dialog',
@@ -6,10 +6,12 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styleUrls: ['./color-picker-dialog.component.css']
 })
 export class ColorPickerDialogComponent {
-  @Input() selectedColor: string = '';
-  @Output() colorSelected = new EventEmitter<string>();
+  color: string = '#000000'; 
 
-  selectColor(color: string) {
-    this.colorSelected.emit(color);
+  @Output() colorSelected: EventEmitter<string> = new EventEmitter<string>();
+
+  onColorChange(event: any): void {
+    this.color = event; 
+    this.colorSelected.emit(this.color);
   }
 }

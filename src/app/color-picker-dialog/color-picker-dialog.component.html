@@ -1,3 +1,3 @@
-<div class="color-picker-container">
-    <input type="color" [(ngModel)]="selectedColor" (change)="selectColor(selectedColor)">
+<div class="color-picker-dialog">
+    <input [(colorPicker)]="color" (colorPickerChange)="onColorChange($event)" [cpOutputFormat]="'hex'" />
 </div>
